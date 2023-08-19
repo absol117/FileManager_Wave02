@@ -3,6 +3,7 @@ package com.scai.gestorefile.gestorefile_w02.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 import java.io.File;
@@ -15,7 +16,11 @@ public class Document {
     private int id;
     private String tag;
     private String path;
+
+    // elimina solo il contenuto, non la proprietà
+    @Transient
     private File file;
+
 
 
     // vedere bene i costruttori
@@ -23,18 +28,22 @@ public class Document {
     public Document(int id, String tag, String path) {
         this.id = id;
         this.tag = tag;
+        this.path = path;
         this.file = new File(path);
+
     }
 
     public Document(String path) {
         this.path = path;
         this.file = new File(path);
+
     }
 
     public Document(String tag, String path) {
         this.tag = tag;
         this.path = path;
         this.file = new File(path);
+
     }
 
     public Document() {
@@ -74,13 +83,4 @@ public class Document {
         this.file = file;
     }
 
-    @Override
-    public String toString() {
-        return "Document{" +
-                "id=" + id +
-                ", tag='" + tag + '\'' +
-                ", path='" + path + '\'' +
-                ", file=" + file +
-                '}';
-    }
 }

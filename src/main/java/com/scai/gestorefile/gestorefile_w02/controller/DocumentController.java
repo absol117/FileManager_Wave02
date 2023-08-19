@@ -1,6 +1,7 @@
 package com.scai.gestorefile.gestorefile_w02.controller;
 
 import com.scai.gestorefile.gestorefile_w02.model.Document;
+import com.scai.gestorefile.gestorefile_w02.service.FileService;
 import com.scai.gestorefile.gestorefile_w02.serviceDatabase.DocumentServiceDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,24 +26,36 @@ public class DocumentController {
     }
 
 
-    @GetMapping("/id/{id}")
-    public Optional<Document> getDocumentById(@PathVariable int id) {
+
+
+
+    @PostMapping("/add")
+    public Document saveDocument(@RequestBody Document document) {
+        return documentServiceDatabase.createDocument(document.getTag(), document.getPath());
+    }
+
+
+    @GetMapping("/search/{id}")
+    public Optional<Document> searchDocument(@PathVariable int id) {
         return documentServiceDatabase.getDocumentById(id);
     }
 
 
 
-    // non va se metto il PostMapping
-    @GetMapping("/save")
-    public Document saveDocument() {
-        String s = "C:/Users/lucam/OneDrive/Desktop/GestoreFile/GestoreFile_W02/src/main/resources/database/prova.txt";
-        String tag1 = "tag1";
-        return documentServiceDatabase.createDocument(tag1, s);
+    @DeleteMapping("/delete/{id}")
+    public boolean deleteDocument(@PathVariable int id) {
+        return documentServiceDatabase.deleteDocumentByIdTrueLord22(id);
     }
 
 
 
-    //Devo finire
+
+
+    @PutMapping("/fix/{id}")
+    public Document fixDocument(@PathVariable int id, @RequestBody Document document) {
+        return documentServiceDatabase.updateWithPath(id, document.getTag(), document.getPath());
+    }
+
 
 
 }

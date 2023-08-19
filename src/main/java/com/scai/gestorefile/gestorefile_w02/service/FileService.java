@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class DocumentService {
+public class FileService {
 
 
     public String read(Document document) {
@@ -24,21 +24,18 @@ public class DocumentService {
             bufferedReader.close();
             return stringBuilder.toString();
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public boolean write(Document document, String content) {
+    public void write(Document document, String content) {
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(document.getFile().getPath(), true));
             bufferedWriter.write(content);
             bufferedWriter.flush();
             bufferedWriter.close();
-            return true;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -62,6 +59,40 @@ public class DocumentService {
         return null;
     }
 
+    public Document addDocument(String tag, String path) {
+        Document document = new Document(tag,path);
+        try {
+            if(document.getFile().exists()) {
+                document.getFile().delete();
+            }
+            if (!document.getFile().exists()) {
+                document.getFile().createNewFile();
+                return document;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+    //mettere a posto dopo
+    public Document addDocument2(String tag, String path) {
+        Document document = new Document(tag,path);
+        try {
+            if(document.getFile().exists()) {
+                document.getFile().delete();
+            }
+            if(document.getFile().createNewFile()) {
+                System.out.println("file creato");
+                return document;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+
+
     public boolean delete(String path) {
         if (Files.exists(Path.of(path))) {
             try {
@@ -81,6 +112,9 @@ public class DocumentService {
         }
         return false;
     }
+
+
+
 
     public boolean move(Document document, String destination) {
         if (document.getFile().exists()) {
