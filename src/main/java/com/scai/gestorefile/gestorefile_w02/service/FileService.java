@@ -15,7 +15,7 @@ public class FileService {
 
     public String read(Document document) {
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(document.getFile().getPath()));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(document.getPath()));
             StringBuilder stringBuilder = new StringBuilder();
             String ris = "";
             while ((ris = bufferedReader.readLine()) != null) {
@@ -32,7 +32,7 @@ public class FileService {
 
     public void write(Document document, String content) {
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(document.getFile().getPath(), true));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(document.getPath(), true));
             bufferedWriter.write(content);
             bufferedWriter.flush();
             bufferedWriter.close();

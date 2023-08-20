@@ -1,7 +1,6 @@
 package com.scai.gestorefile.gestorefile_w02.controller;
 
 import com.scai.gestorefile.gestorefile_w02.model.Document;
-import com.scai.gestorefile.gestorefile_w02.service.FileService;
 import com.scai.gestorefile.gestorefile_w02.serviceDatabase.DocumentServiceDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +25,6 @@ public class DocumentController {
     }
 
 
-
-
-
     @PostMapping("/add")
     public Document saveDocument(@RequestBody Document document) {
         return documentServiceDatabase.createDocument(document.getTag(), document.getPath());
@@ -49,13 +45,20 @@ public class DocumentController {
 
 
 
-
-
     @PutMapping("/fix/{id}")
     public Document fixDocument(@PathVariable int id, @RequestBody Document document) {
         return documentServiceDatabase.updateWithPath(id, document.getTag(), document.getPath());
     }
 
+    @PutMapping("write/{id}")
+    public boolean writeContent(@PathVariable int id, @RequestBody String content) {
+        return documentServiceDatabase.fixContent(id, content);
+    }
+
+    @GetMapping("/read/{id}")
+    public String readDocument(@PathVariable int id) {
+        return documentServiceDatabase.read(id);
+    }
 
 
 }

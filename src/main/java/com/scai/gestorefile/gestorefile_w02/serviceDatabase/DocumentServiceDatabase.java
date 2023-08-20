@@ -6,11 +6,10 @@ import com.scai.gestorefile.gestorefile_w02.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +18,6 @@ public class DocumentServiceDatabase {
 
     private final DocumentRepository documentRepository;
     private final FileService fileService;
-
-    private ArrayList<File> files = new ArrayList<>();
 
     @Autowired
     public DocumentServiceDatabase(DocumentRepository documentRepository, FileService fileService) {
@@ -69,8 +66,8 @@ public class DocumentServiceDatabase {
 
     public boolean deleteDocumentByIdTrueLord22(int id) {
         Optional<Document> documentById = getDocumentById(id);
-        documentById.ifPresent(document -> document.getFile().delete());
-
+        String path = documentById.get().getPath();
+        fileService.delete(path);
         documentRepository.deleteById(id);
         return true;
     }
@@ -88,12 +85,38 @@ public class DocumentServiceDatabase {
     }
 
     public Document updateWithPath(int id, String tag, String path) {
-        Optional<Document> documentById = getDocumentById(id);
-        Document document = documentById.get();
-        document.setTag(tag);
-        document.setPath(path);
-        return documentRepository.save(document);
-
+        if (getDocumentById(id).isPresent()) {
+            try {
+                Document document = getDocumentById(id).get();
+                String originPath = document.getPath();
+                document.setPath(path);
+                document.setTag(tag);
+                Files.move(Path.of(originPath), Path.of(path), StandardCopyOption.REPLACE_EXISTING);
+                documentRepository.save(document);
+                return document;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
+
+
+    public boolean fixContent(int id, String content) {
+        if(getDocumentById(id).isPresent()) {
+            Document document = getDocumentById(id).get();
+            fileService.write(document, content);
+            return true;
+        }
+        return false;
+    }
+
+    public String read(int id) {
+        if (getDocumentById(id).isPresent()) {
+            return fileService.read(getDocumentById(id).get());
+        }
+        return null;
+    }
+
 
 }
